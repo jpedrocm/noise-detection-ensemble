@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 
-from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.model_selection import StratifiedKFold
 
 
 
@@ -23,7 +23,8 @@ class DataHelper():
 	def split_in_sets(frame, labels):
 
 		skf = StratifiedKFold(n_splits=3, shuffle=True)
-		return skf.split(X=range(len(labels)), y=labels)[0]
+		splits = skf.split(X=range(len(labels)), y=labels)
+		return list(splits)[0]
 
 	@staticmethod
 	def select_rows(frame, idxs, copy):
