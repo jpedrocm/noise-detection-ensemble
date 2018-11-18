@@ -25,19 +25,29 @@ The goal of this project is to implement the proposed method of the paper ["A tw
 
 * Clone this repository into your machine
 * Download and install all the requirements listed above in the given order
-* Download the listed datasets in .txt format and change their types to .csv
-* Place all .csv files inside the data/ folder
+* Download the listed datasets in .txt format
+* Place all these files inside the data/ folder
+* Change their file types to .csv
+* Change their filenames according to the names in the ConfigHelper class attribute "datasets"
 
 ### Reproducing
 
 * Enter into the project main folder in your local repository
-* TODO: fix instructions
+* Run the experiment
+```
+python main.py
+```
 
 ## Project Structure
 
     .            
     ├── data                                  # Datasets files
+    ├── results                               # Results files
     ├── src                                   # Source code files
+    |   ├── main.py
+    |   ├── config_helper.py
+    |   ├── data_helper.py
+    |   └── io_helper.py
     ├── LICENSE.md
     └── README.md
 
