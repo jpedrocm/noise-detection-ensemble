@@ -15,12 +15,12 @@ class IOHelper():
 						 float_format=precision)
 
 	@staticmethod
-	def read_dataset(filename):
-		print("Reading dataset")
+	def read_dataset(filename, index_col, header, sep):
+		print("Reading dataset: " + filename)
 		
 		file = IOHelper.data_path+filename+".csv"
 		dataframe = read_csv(filepath_or_buffer=file, encoding="ascii", 
-							 skip_blank_lines=False)
+							 index_col=index_col, header=header, sep=sep)
 		return dataframe
 
 	@staticmethod
