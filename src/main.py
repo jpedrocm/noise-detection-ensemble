@@ -8,16 +8,19 @@ from io_helper import IOHelper
 
 def main():
 
-	for set_name, target_col in ConfigHelper.get_datasets():
-		print("Dataset: " + set_name)
+	for set_data in ConfigHelper.get_datasets():
+		set_name = set_data[0]
+		set_index = set_data[1]
+		set_target = set_data[2]
+		set_header = set_data[3]
+		set_sep = set_data[4]
 
-		data = IOHelper.read_dataset(set_name)
+		data = IOHelper.read_dataset(set_name, set_index, set_header, set_sep)
+
+		feats, labels = DataHelper.extract_feature_labels(data, set_target)
 
 		for e in range(ConfigHelper.nb_executions):
 			print("Execution: " + str(e))
-
-			feats, labels = DataHelper.extract_feature_labels(data,
-															  target_col)
 
 			train_idxs, test_idxs = DataHelper.split_in_sets(feats, labels)
 
