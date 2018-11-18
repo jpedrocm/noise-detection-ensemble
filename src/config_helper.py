@@ -10,15 +10,21 @@ class ConfigHelper():
 	sampling_rates = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2]
 	clean_threshold = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
-	datasets = ["blood", "breast", "chess", "german", "heart", 
-				"ionosphere", "parkinsons", "spambase", "tic-tac-toe"]
+	metrics_file = "metrics"
 
-	metrics_file = "rf_min_samples"
-	
+
+	@staticmethod
+	def get_datasets():
+		return	[("blood", ), ("breast", ),
+				 ("chess", ), ("german", ),
+				 ("heart", ), ("ionosphere", ),
+				 ("parkinsons",), ("spambase",), 
+				 ("tic-tac-toe", )
+				]
 
 	@staticmethod
 	def get_classifiers():
-		return [
+		return 	[
 				("Fl_rf", RF(n_estimators=501, oob_score=True, n_jobs=-1), 
 							 "fl"),
 				("Cl_rf", RF(n_estimators=501, oob_score=True, n_jobs=-1), 
@@ -31,4 +37,4 @@ class ConfigHelper():
 									  min_impurity_decrease=0.01), 
 									  n_estimators=100, algorithm="SAMME"),
 									  None)
-			   ]
+				]
