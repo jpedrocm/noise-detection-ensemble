@@ -2,8 +2,9 @@
 
 
 from config_helper import ConfigHelper
-from data_helper import DataHelper
 from io_helper import IOHelper
+from data_helper import DataHelper
+from noise_detection_ensemble import NoiseDetectionEnsemble
 
 
 def main():
@@ -18,6 +19,8 @@ def main():
 		data = IOHelper.read_dataset(set_name, set_index, set_header, set_sep)
 
 		feats, labels = DataHelper.extract_feature_labels(data, set_target)
+
+		max_nb_feats = DataHelper.calculate_max_nb_features(feats)
 
 		for e in range(ConfigHelper.nb_executions):
 			print("Execution: " + str(e))
@@ -37,8 +40,9 @@ def main():
 				for name, clf, clean_type in ConfigHelper.get_classifiers():
 					print("Ensemble: " + name)
 
-					for rate in ConfigHelper.sampling_rates:
-						print("Rate: " + str(rate))
+					NoiseDetectionEnsemble.run(clf, clean_type, train_X,
+											   noisy_train_y, max_nb_feats)
+
 
 								
 
