@@ -6,24 +6,21 @@ from sklearn.tree import DecisionTreeClassifier as Tree
 
 
 class ConfigHelper():
-	k_folds = 3
 	nb_executions = 50
 	noise_levels = [0, 0.1, 0.2, 0.3, 0.4]
-	sampling_rates = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2]
-	clean_threshold = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
 	metrics_file = "metrics"
 
 
 	@staticmethod
 	def get_datasets():
-		return	[("blood",		 None, 		-1,  0,		","), 
-				 ("breast",		 0,    		-1,  None,	","),
-				 ("chess",  	 None, 		-1,  None,	","), 
+		return	[("blood",		 None,		-1,  	0,	","), 
+				 ("breast",		 	0,		-1,  None,	","),
+				 ("chess",  	 None,		-1,  None,	","), 
 				 ("german", 	 None, 		-1,	 None,	" "),
 				 ("heart",  	 None, 		-1,	 None,	" "), 
 				 ("ionosphere",  None, 		-1,	 None,	","),
-				 ("parkinsons",  None, "status", 0,		","), 
+				 ("parkinsons",  None, "status",	0,	","), 
 				 ("spambase", 	 None, 		-1,	 None,	","), 
 				 ("tic-tac-toe", None, 		-1,	 None,	",")
 				]
