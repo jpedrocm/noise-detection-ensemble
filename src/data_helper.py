@@ -37,5 +37,18 @@ class DataHelper():
 		return sel
 
 	@staticmethod
-	def insert_noise(frame, level):
-		pass
+	def insert_noise(labels, level):
+		unique_values = labels.unique().tolist()
+		unique_mapping = {unique_values[0]: unique_values[1],
+						  unique_values[1]: unique_values[0]}
+
+		sample = labels.sample(frac=level)
+		sample_idxs = sample.index
+		sample_values = sample.values
+		noise_values = [unique_mapping[v] for v in sample_values]
+
+
+		noisy_labels = deepcopy(labels)
+		noisy_labels.loc[sample_idxs] = noise_values
+
+		return noisy_labels
