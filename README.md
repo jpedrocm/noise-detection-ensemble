@@ -28,7 +28,7 @@ The goal of this project is to implement the proposed method of the paper ["A tw
 * Download the listed datasets in .txt format
 * Place all these files inside the data/ folder
 * Change their file types to .csv
-* Change their filenames according to the names in the ConfigHelper class attribute "datasets"
+* Change their filenames according to the names in the ConfigHelper function get_datasets
 
 ### Reproducing
 
