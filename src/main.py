@@ -25,9 +25,9 @@ def main():
 			train_idxs, test_idxs = DataHelper.split_in_sets(feats, labels)
 
 			train_X = DataHelper.select_rows(feats, train_idxs, copy=False)
-			train_y = DataHelper.select_rows(labels, train_idxs, copy=True)
+			train_y = DataHelper.select_rows(labels, train_idxs, copy=False)
 			test_X = DataHelper.select_rows(feats, test_idxs, copy=False)
-			test_y = DataHelper.select_rows(labels, test_idxs, copy=True)
+			test_y = DataHelper.select_rows(labels, test_idxs, copy=False)
 
 			for noise_level in ConfigHelper.noise_levels:
 				print("Noise level: " + str(noise_level))
