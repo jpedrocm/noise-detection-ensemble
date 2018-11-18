@@ -21,6 +21,9 @@ class IOHelper():
 		file = IOHelper.data_path+filename+".csv"
 		dataframe = read_csv(filepath_or_buffer=file, encoding="ascii", 
 							 index_col=index_col, header=header, sep=sep)
+
+		dataframe.reset_index(inplace=True)
+		
 		return dataframe
 
 	@staticmethod
