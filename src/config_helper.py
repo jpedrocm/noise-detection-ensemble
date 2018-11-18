@@ -1,3 +1,5 @@
+###############################################################################
+
 from sklearn.ensemble import RandomForestClassifier as RF
 from sklearn.ensemble import AdaBoostClassifier as Adaboost
 from sklearn.tree import DecisionTreeClassifier as Tree
@@ -15,11 +17,15 @@ class ConfigHelper():
 
 	@staticmethod
 	def get_datasets():
-		return	[("blood", ), ("breast", ),
-				 ("chess", ), ("german", ),
-				 ("heart", ), ("ionosphere", ),
-				 ("parkinsons",), ("spambase",), 
-				 ("tic-tac-toe", )
+		return	[("blood",		 None, 		-1,  0,		","), 
+				 ("breast",		 0,    		-1,  None,	","),
+				 ("chess",  	 None, 		-1,  None,	","), 
+				 ("german", 	 None, 		-1,	 None,	" "),
+				 ("heart",  	 None, 		-1,	 None,	" "), 
+				 ("ionosphere",  None, 		-1,	 None,	","),
+				 ("parkinsons",  None, "status", 0,		","), 
+				 ("spambase", 	 None, 		-1,	 None,	","), 
+				 ("tic-tac-toe", None, 		-1,	 None,	",")
 				]
 
 	@staticmethod
