@@ -1,6 +1,7 @@
 ###############################################################################
 
 from copy import deepcopy
+from math import sqrt
 
 from sklearn.model_selection import StratifiedKFold
 
@@ -52,3 +53,9 @@ class DataHelper():
 		noisy_labels.loc[sample_idxs] = noise_values
 
 		return noisy_labels
+
+	@staticmethod
+	def calculate_max_nb_features(features):
+
+		nb_features = len(features.columns)
+		return sqrt(nb_features)
