@@ -10,6 +10,9 @@ class ConfigHelper():
 	sampling_rates = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2]
 	clean_threshold = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
+	datasets = ["blood", "breast", "chess", "german", "heart", 
+				"ionosphere", "parkinsons", "spambase", "tic-tac-toe"]
+
 	metrics_file = "rf_min_samples"
 	
 
