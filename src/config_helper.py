@@ -33,7 +33,7 @@ class ConfigHelper():
 		return 	[
 				("FL_RF", Tree(), "fl"),
 				("CL_RF", Tree(), "cl"),
-				("FL_MAJ_RF", Tree(), "maj"),
+				("FL_MAJ_RF", RF(n_estimators=501, n_jobs=-1), "maj"),
 				("RF", RF(n_estimators=500, n_jobs=-1), None),
 				("Boosting", Adaboost(base_estimator=Tree(max_depth=30, 
 									  min_samples_split=20, 
