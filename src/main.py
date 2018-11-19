@@ -19,7 +19,7 @@ def main():
 		data = IOHelper.read_dataset(set_name, set_index, set_header, set_sep)
 
 		feats, labels = DataHelper.extract_feature_labels(data, set_target)
-
+		DataHelper.create_label_mapping(labels)
 		max_nb_feats = DataHelper.calculate_max_nb_features(feats)
 
 		for e in range(ConfigHelper.nb_executions):
