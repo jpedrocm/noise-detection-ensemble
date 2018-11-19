@@ -75,7 +75,25 @@ class NoiseDetectionEnsemble():
 
 	@staticmethod
 	def _clean_noisy_data(X, y, is_y_noise, clean_type):
-		pass
+
+		noise_idxs = is_y_noise[is_y_noise==True].index
+
+		clean_X = None
+		clean_y = None
+
+		if clean_type=="fl":
+			clean_X = X.drop(index=noise_idxs)
+			clean_y = y.drop(index=noise_idxs)
+
+		elif clean_type=="cl":
+			clean_X = X
+			noise_values = DataHelper.select_rows(y, noise_idxs, copy=False)
+			clean_y = DataHelper.map_labels(y, noise_idxs, noise_values)
+
+		else:
+			raise ValueError("Clean type error: " + clean_type)
+
+		return (clean_X, clean_y)
 
 	@staticmethod
 	def _calculate_cv_error(base_clf, best_rate, X, y, is_y_noise, clean_type, 
