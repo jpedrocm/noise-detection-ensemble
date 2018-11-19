@@ -9,6 +9,9 @@ from sklearn.model_selection import StratifiedKFold
 
 class DataHelper():
 
+	label_mapping = None
+
+
 	@staticmethod
 	def extract_feature_labels(frame, target):
 		print("Extracting features and labels")
@@ -40,21 +43,25 @@ class DataHelper():
 		return sel
 
 	@staticmethod
-	def insert_noise(labels, level):
+	def create_label_mapping(labels):
 		unique_values = labels.unique().tolist()
-		unique_mapping = {unique_values[0]: unique_values[1],
-						  unique_values[1]: unique_values[0]}
+		DataHelper.label_mapping = {unique_values[0]: unique_values[1],
+						  			unique_values[1]: unique_values[0]}
 
+	@staticmethod
+	def map_labels(labels, sample_idxs, sample_values):
+		noise_values = [DataHelper.label_mapping[v] for v in sample_values]
+		noisy_labels = deepcopy(labels)
+		noisy_labels.loc[sample_idxs] = noise_values
+		return noisy_labels
+
+	@staticmethod
+	def insert_noise(labels, level):
 		sample = labels.sample(frac=level)
 		sample_idxs = sample.index
 		sample_values = sample.values
-		noise_values = [unique_mapping[v] for v in sample_values]
 
-
-		noisy_labels = deepcopy(labels)
-		noisy_labels.loc[sample_idxs] = noise_values
-
-		return noisy_labels
+		return DataHelper.map_labels(labels, sample_idxs, sample_values)
 
 	@staticmethod
 	def calculate_max_nb_features(features):
