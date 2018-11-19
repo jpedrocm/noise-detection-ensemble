@@ -62,14 +62,17 @@ class NoiseDetectionEnsemble():
 			oob_predictions = detector.estimators_[clf_index].predict(oob_X_feats)
 			clf_instance_ausence.loc[oob_idxs.index] = oob_predictions
 
-		#filtra falsos
-		#calcula erro
-		#assinala como noise
-		oob_predictions_per_estimator = [[for ] for index, row in instance_ausence.iterrows()]
+		predictions = instance_ausence.values
+		filtered = [[val for val in row if not isinstance(val, bool)] \
+					for row in predictions]
+		#find each gold label
+		errors = [DataHelper.calculate_error_score([gold_label]*len(row), 
+									row) for row in filtered]
+		#print(errors)
+		#sys.exit()
 
-		predictions 
-
-		is_noise = Series(index=y.index, dtype=bool, name="is_noise")
+		is_noise_list = [error > threshold for error in errors]
+		is_noise = Series(is_noise_list, index=y.index, dtype=bool, name="is_noise")
 
 		return is_noise
 
@@ -148,7 +151,7 @@ class NoiseDetectionEnsemble():
 				min_error = cv_error
 				best_threshold = threshold
 				best_is_y_noise = is_y_noise
-		#mark as noisy
+		
 		cleansed_tuple = NoiseDetectionEnsemble._clean_noisy_data(X, y,
 														best_is_y_noise,
 														clean_type)
@@ -157,13 +160,13 @@ class NoiseDetectionEnsemble():
 			
 	@staticmethod 
 	def run(base_clf, clean_type, train_X, train_y, max_nb_feats):
-		best_triple = NoiseDetectionEnsemble._first_stage(base_clf, train_X,
+		first_triple = NoiseDetectionEnsemble._first_stage(base_clf, train_X,
 														 train_y, max_nb_feats)
 
-		best_detector = best_triple[0]
-		best_rate = best_triple[1]
+		best_detector = first_triple[0]
+		best_rate = first_triple[1]
 
-		cleansed_data = NoiseDetectionEnsemble._second_stage(best_detector,
+		second_triple = NoiseDetectionEnsemble._second_stage(best_detector,
 															 base_clf,
 															 best_rate,
 															 clean_type, 
@@ -171,4 +174,5 @@ class NoiseDetectionEnsemble():
 															 train_y,
 															 max_nb_feats)
 
-		return (best_rate, best_threshold, cleansed_data[0], cleansed_data[1])
+		return [best_rate, second_triple[0], second_triple[1],
+					second_triple[2]]
