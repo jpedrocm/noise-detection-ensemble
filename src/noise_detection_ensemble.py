@@ -6,7 +6,9 @@ from numpy import mean
 from sklearn.ensemble import BaggingClassifier
 from sklearn.model_selection import StratifiedKFold
 from pandas import DataFrame
-from DataHelper import select_rows
+
+from data_helper import DataHelper
+from metrics_helper import MetricsHelper
 
 
 class NoiseDetectionEnsemble():
@@ -81,12 +83,12 @@ class NoiseDetectionEnsemble():
 
 		errors = []
 
-		skf = StratifiedKFold(n_splits=3, shuffle=True)
-		splits = skf.split(X=range(len(y)), y=y)
+		skf = StratifiedKFold(n_splits=NoiseDetectionEnsemble.k_folds, 
+								shuffle=True)
 
-		for train_idxs, val_idxs in splits:
-			train_X = select_rows(X, train_idxs, copy=False)
-			train_y = select_rows(y, train_idxs, copy=False)
+		for train_idxs, val_idxs in skf.split(X=range(len(y)), y=y):
+			train_X = DataHelper.select_rows(X, train_idxs, copy=False)
+			train_y = DataHelper.select_rows(y, train_idxs, copy=False)
 			train_is_y_noise = select_rows(is_y_noise, train_idxs, copy=False)
 
 			clean_train = NoiseDetectionEnsemble._clean_noisy_data(train_X,
@@ -94,14 +96,16 @@ class NoiseDetectionEnsemble():
 													clean_type)
 
 			ensemble = BaggingClassifier(base_clf, n_estimators=501,
-										 oob_score=True, max_samples=best_rate,
-										 n_jobs=-1, max_features=max_nb_feats)
+										 max_samples=best_rate, n_jobs=-1, 
+										 max_features=max_nb_feats)
 			ensemble.fit(clean_train[0], clean_train[1])
 
-			val_X = select_rows(X, val_idxs, copy=False)
-			val_y = select_rows(y, val_idxs, copy=False)
+			val_X = DataHelper.select_rows(X, val_idxs, copy=False)
+			val_y = DataHelper.select_rows(y, val_idxs, copy=False)
 
-			#store the generalization error on the remaining fold
+			predictions = ensemble.predict(val_X)
+			error = MetricsHelper.calculate_error_score(val_y, predictions)
+			errors.append(error)
 
 		return mean(errors)
 
