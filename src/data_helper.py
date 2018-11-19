@@ -1,7 +1,7 @@
 ###############################################################################
 
 from copy import deepcopy
-from math import sqrt
+from numpy import sqrt
 
 from sklearn.model_selection import StratifiedKFold
 
@@ -58,4 +58,4 @@ class DataHelper():
 	def calculate_max_nb_features(features):
 
 		nb_features = len(features.columns)
-		return sqrt(nb_features)
+		return max(1, int(sqrt(nb_features)))
