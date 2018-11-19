@@ -23,6 +23,7 @@ class IOHelper():
 							 index_col=index_col, header=header, sep=sep)
 
 		dataframe.reset_index(inplace=True)
+		dataframe.drop(columns=dataframe.columns[0], inplace=True)
 		
 		return dataframe
 
