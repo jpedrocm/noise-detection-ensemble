@@ -14,6 +14,7 @@ class DataHelper():
 		print("Extracting features and labels")
 
 		labels = frame[target] if target!=-1 else frame.iloc[:, target]
+		labels = labels.astype("category")
 		feats = frame.drop(columns=labels.name)
 
 		print("Columns: " + str(len(feats.columns)))
