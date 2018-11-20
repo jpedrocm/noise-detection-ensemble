@@ -5,6 +5,7 @@ from sklearn.ensemble import AdaBoostClassifier as Adaboost
 from sklearn.tree import DecisionTreeClassifier as Tree
 
 
+
 class ConfigHelper():
 	nb_executions = 50
 	noise_levels = [0, 0.1, 0.2, 0.3, 0.4]

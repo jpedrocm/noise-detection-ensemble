@@ -5,8 +5,10 @@ from pandas import read_csv
 
 
 class IOHelper():
+
 	data_path = "data/"
 	results_path = "results/"
+
 
 	@staticmethod
 	def _write_to_csv(dataframe, filename, filepath, precision):
