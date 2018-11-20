@@ -11,6 +11,7 @@ from data_helper import DataHelper
 from metrics_helper import MetricsHelper
 
 
+
 class NoiseDetectionEnsemble():
 	k_folds = 3
 	sampling_rates = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0,]
@@ -76,22 +77,25 @@ class NoiseDetectionEnsemble():
 		return is_noise
 
 	@staticmethod
-	def _clean_noisy_data(X, y, is_y_noise, clean_type):
-
-		noise_idxs = is_y_noise[is_y_noise==True].index
+	def _clean_noisy_data(train_X, train_y, is_y_noise, clean_type):
 
 		clean_X = None
 		clean_y = None
 
 		if clean_type=="fl":
-			clean_X = X.drop(index=noise_idxs)
-			clean_y = y.drop(index=noise_idxs)
+			noise_idxs = is_y_noise[is_y_noise==True].index
+			clean_X = train_X.drop(index=noise_idxs)
+			clean_y = train_y.drop(index=noise_idxs)
 
 		elif clean_type=="cl":
-			clean_X = X
-			noise_values = DataHelper.select_rows(y, noise_idxs, copy=False)
-			clean_y = DataHelper.map_labels(y, noise_idxs, noise_values)
+			noise_idxs = [i for i in range(len(is_y_noise)) \
+								if is_y_noise.iloc[i]==True]
 
+			clean_X = train_X
+			noise_values = DataHelper.select_rows(train_y, noise_idxs, 
+												  copy=False)
+			clean_y = DataHelper.map_labels(train_y, noise_values.index, 
+											noise_values)
 		else:
 			raise ValueError("Clean type error: " + clean_type)
 
@@ -107,6 +111,7 @@ class NoiseDetectionEnsemble():
 								shuffle=True)
 
 		for train_idxs, val_idxs in skf.split(X=range(len(y)), y=y):
+
 			train_X = DataHelper.select_rows(X, train_idxs, copy=False)
 			train_y = DataHelper.select_rows(y, train_idxs, copy=False)
 			train_is_y_noise = DataHelper.select_rows(is_y_noise, train_idxs,
@@ -115,11 +120,6 @@ class NoiseDetectionEnsemble():
 			clean_train = NoiseDetectionEnsemble._clean_noisy_data(train_X,
 													train_y, train_is_y_noise,
 													clean_type)
-			print(len(X))
-			print(len(train_X))
-			print(len(clean_train[0]))
-			print(len(clean_train[1]))
-			sys.exit()
 
 			ensemble = BaggingClassifier(base_clf, n_estimators=501,
 										 max_samples=best_rate, n_jobs=-1, 
