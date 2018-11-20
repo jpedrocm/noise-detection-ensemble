@@ -5,7 +5,7 @@ from math import inf as INF
 from numpy import mean
 from sklearn.ensemble import BaggingClassifier
 from sklearn.model_selection import StratifiedKFold
-from pandas import DataFrame
+from pandas import DataFrame, Series
 
 from data_helper import DataHelper
 from metrics_helper import MetricsHelper
@@ -15,6 +15,7 @@ class NoiseDetectionEnsemble():
 	k_folds = 3
 	sampling_rates = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0,]
 	clean_thresholds = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+
 
 	@staticmethod
 	def _first_stage(base_clf, X, y, max_nb_feats):
@@ -65,11 +66,9 @@ class NoiseDetectionEnsemble():
 		predictions = instance_ausence.values
 		filtered = [[val for val in row if not isinstance(val, bool)] \
 					for row in predictions]
-		#find each gold label
-		errors = [DataHelper.calculate_error_score([gold_label]*len(row), 
-									row) for row in filtered]
-		#print(errors)
-		#sys.exit()
+
+		errors = [MetricsHelper.calculate_error_score([y.iloc[i]]*len(filtered[i]), 
+						filtered[i]) for i in range(nb_instances)]
 
 		is_noise_list = [error > threshold for error in errors]
 		is_noise = Series(is_noise_list, index=y.index, dtype=bool, name="is_noise")
@@ -110,11 +109,17 @@ class NoiseDetectionEnsemble():
 		for train_idxs, val_idxs in skf.split(X=range(len(y)), y=y):
 			train_X = DataHelper.select_rows(X, train_idxs, copy=False)
 			train_y = DataHelper.select_rows(y, train_idxs, copy=False)
-			train_is_y_noise = select_rows(is_y_noise, train_idxs, copy=False)
+			train_is_y_noise = DataHelper.select_rows(is_y_noise, train_idxs,
+												copy=False)
 
 			clean_train = NoiseDetectionEnsemble._clean_noisy_data(train_X,
 													train_y, train_is_y_noise,
 													clean_type)
+			print(len(X))
+			print(len(train_X))
+			print(len(clean_train[0]))
+			print(len(clean_train[1]))
+			sys.exit()
 
 			ensemble = BaggingClassifier(base_clf, n_estimators=501,
 										 max_samples=best_rate, n_jobs=-1, 
