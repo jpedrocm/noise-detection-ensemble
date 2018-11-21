@@ -32,7 +32,6 @@ class NoiseDetectionEnsemble():
 		best_ensemble = None
 
 		for rate in NoiseDetectionEnsemble.sampling_rates:
-			print("Rate: " + str(rate))
 
 			ensemble = NoiseDetectionEnsemble.get_ensemble(base_clf, True,
 														rate, max_nb_feats)
