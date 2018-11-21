@@ -16,6 +16,10 @@ class MetricsHelper():
 		return (1-accuracy_score(true_y, pred_y))
 
 	@staticmethod
+	def reset_metrics():
+		MetricsHelper.metrics = []
+
+	@staticmethod
 	def convert_metrics_to_frame():
 		columns = ["dataset", "execution", "noise", "clf", "sampling_rate",
 				   "threshold", "test_error"]
