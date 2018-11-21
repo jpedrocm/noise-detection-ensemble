@@ -11,9 +11,9 @@ class IOHelper():
 
 
 	@staticmethod
-	def _write_to_csv(dataframe, filename, filepath, precision):
+	def _write_to_csv(frame, filename, filepath, precision):
 		file = filepath+filename+".csv"
-		dataframe.to_csv(path_or_buf=file, encoding="ascii",
+		frame.to_csv(path_or_buf=file, encoding="ascii",
 						 float_format=precision)
 
 	@staticmethod
@@ -21,17 +21,17 @@ class IOHelper():
 		print("Reading dataset: " + filename)
 		
 		file = IOHelper.data_path+filename+".csv"
-		dataframe = read_csv(filepath_or_buffer=file, encoding="ascii", 
-							 index_col=index_col, header=header, sep=sep)
+		frame = read_csv(filepath_or_buffer=file, encoding="ascii", 
+						 index_col=index_col, header=header, sep=sep)
 
-		dataframe.reset_index(inplace=True)
-		dataframe.drop(columns=dataframe.columns[0], inplace=True)
+		frame.reset_index(inplace=True)
+		frame.drop(columns=frame.columns[0], inplace=True)
 		
-		return dataframe
+		return frame
 
 	@staticmethod
-	def store_results(dataframe, filename):
+	def store_results(frame, filename):
 		print("Storing results")
 
-		IOHelper._write_to_csv(dataframe, filename, IOHelper.results_path,
+		IOHelper._write_to_csv(frame, filename, IOHelper.results_path,
 							   precision=None)
