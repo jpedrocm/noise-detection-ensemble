@@ -13,10 +13,17 @@ from metrics_helper import MetricsHelper
 
 
 class NoiseDetectionEnsemble():
+
 	k_folds = 3
 	sampling_rates = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0,]
 	clean_thresholds = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
+
+	@staticmethod
+	def get_ensemble(base_clf, use_oob, sample_rate, max_nb_feats):
+		return BaggingClassifier(base_clf, n_estimators=501,
+								oob_score=use_oob, max_samples=sample_rate,
+								n_jobs=-1, max_features=max_nb_feats)
 
 	@staticmethod
 	def _first_stage(base_clf, X, y, max_nb_feats):
@@ -27,9 +34,8 @@ class NoiseDetectionEnsemble():
 		for rate in NoiseDetectionEnsemble.sampling_rates:
 			print("Rate: " + str(rate))
 
-			ensemble = BaggingClassifier(base_clf, n_estimators=501,
-										 oob_score=True, max_samples=rate,
-										 n_jobs=-1, max_features=max_nb_feats)
+			ensemble = NoiseDetectionEnsemble.get_ensemble(base_clf, True,
+														rate, max_nb_feats)
 			ensemble.fit(X, y)
 			error = ensemble.oob_score_
 
@@ -121,9 +127,8 @@ class NoiseDetectionEnsemble():
 													train_y, train_is_y_noise,
 													clean_type)
 
-			ensemble = BaggingClassifier(base_clf, n_estimators=501,
-										 max_samples=best_rate, n_jobs=-1, 
-										 max_features=max_nb_feats)
+			ensemble = NoiseDetectionEnsemble.get_ensemble(base_clf, False, 
+													best_rate, max_nb_feats)
 			ensemble.fit(clean_train[0], clean_train[1])
 
 			val_X = DataHelper.select_rows(X, val_idxs, copy=False)
