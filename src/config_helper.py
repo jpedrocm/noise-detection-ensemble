@@ -37,14 +37,17 @@ class ConfigHelper():
 	@staticmethod
 	def get_classifiers():
 		return 	[
-				("FL_RF", Tree(), "fl"),
-				("CL_RF", Tree(), "cl"),
-				#("FL_MAJ_RF", MajorityFiltering.get_ensemble(), "maj"),
-				("RF", RF(n_estimators=501, n_jobs=-1), None),
-				("Boosting", Adaboost(base_estimator=Tree(max_depth=30, 
-									  min_samples_split=20, 
+				("FL_RF", Tree(max_depth=None, min_samples_leaf=1), "fl"),
+				("CL_RF", Tree(max_depth=None, min_samples_leaf=1), "cl"),
+				("FL_MAJ_RF", MajorityFiltering.get_ensemble(), "maj"),
+				("RF", RF(n_estimators=501, max_depth=None, 
+						  max_features="sqrt", min_samples_leaf=1, 
+						  n_jobs=-1), None),
+				("Boosting", Adaboost(base_estimator=Tree(max_depth=None, #default 30
+									  min_samples_leaf=1, #default 7
+									  min_samples_split=2, #default 20
 									  min_impurity_decrease=0.01), 
-									  n_estimators=100, algorithm="SAMME"),
+									  n_estimators=501, algorithm="SAMME"),#defaukt 100
 									  None)
 				]
 
@@ -64,8 +67,7 @@ class ConfigHelper():
 			chosen_clf = clf
 
 		elif clean_type == "maj":
-			filt_X, filt_y = MajorityFiltering.run(clf, 
-												   train_X, 
+			filt_X, filt_y = MajorityFiltering.run(train_X, 
 												   noisy_train_y)
 			chosen_X = filt_X
 			chosen_y = filt_y
