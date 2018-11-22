@@ -15,15 +15,16 @@ from metrics_helper import MetricsHelper
 class NoiseDetectionEnsemble():
 
 	k_folds = 3
-	sampling_rates = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0,]
+	sampling_rates = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0,1.2]
 	clean_thresholds = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
 
 	@staticmethod
 	def get_ensemble(base_clf, use_oob, sample_rate, max_nb_feats):
 		return BaggingClassifier(base_clf, n_estimators=501,
-								oob_score=use_oob, max_samples=sample_rate,
-								n_jobs=-1, max_features=max_nb_feats)
+								oob_score=use_oob, n_jobs=-1,
+								max_samples=min(sample_rate, 1.0),
+								max_features=max_nb_feats)
 
 	@staticmethod
 	def _first_stage(base_clf, X, y, max_nb_feats):
@@ -32,10 +33,14 @@ class NoiseDetectionEnsemble():
 		best_ensemble = None
 
 		for rate in NoiseDetectionEnsemble.sampling_rates:
+			
+			X, y, adapted_rate = DataHelper.adapt_rate(X, y, rate)
 
 			ensemble = NoiseDetectionEnsemble.get_ensemble(base_clf, True,
-														rate, max_nb_feats)
+												adapted_rate, max_nb_feats)
+
 			ensemble.fit(X, y)
+
 			error = ensemble.oob_score_
 
 			if error < min_error:
@@ -121,14 +126,19 @@ class NoiseDetectionEnsemble():
 			train_y = DataHelper.select_rows(y, train_idxs, copy=False)
 			train_is_y_noise = DataHelper.select_rows(is_y_noise, train_idxs,
 												copy=False)
-
+	
 			clean_train = NoiseDetectionEnsemble._clean_noisy_data(train_X,
 													train_y, train_is_y_noise,
 													clean_type)
 
+			train_X, train_y, adapted_rate = DataHelper.adapt_rate(train_X, 
+																train_y, 
+																best_rate)
+
+
 			ensemble = NoiseDetectionEnsemble.get_ensemble(base_clf, False, 
-													best_rate, max_nb_feats)
-			ensemble.fit(clean_train[0], clean_train[1])
+													adapted_rate, max_nb_feats)
+			ensemble.fit(train_X, train_y)
 
 			val_X = DataHelper.select_rows(X, val_idxs, copy=False)
 			val_y = DataHelper.select_rows(y, val_idxs, copy=False)
@@ -156,6 +166,7 @@ class NoiseDetectionEnsemble():
 																  is_y_noise,
 																  clean_type,
 																  max_nb_feats)
+			
 			if cv_error < min_error:
 				min_error = cv_error
 				best_threshold = threshold
