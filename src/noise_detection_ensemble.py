@@ -81,7 +81,7 @@ class NoiseDetectionEnsemble():
 		errors = [MetricsHelper.calculate_error_score([y.iloc[i]]*len(filtered[i]), 
 						filtered[i]) for i in range(nb_instances)]
 
-		is_noise_list = [error > threshold for error in errors]
+		is_noise_list = [abs(error - threshold) > 1e-10 for error in errors]
 		is_noise = Series(is_noise_list, index=y.index, dtype=bool, name="is_noise")
 
 		return is_noise
@@ -131,10 +131,9 @@ class NoiseDetectionEnsemble():
 													train_y, train_is_y_noise,
 													clean_type)
 
-			train_X, train_y, adapted_rate = DataHelper.adapt_rate(train_X, 
-																train_y, 
+			train_X, train_y, adapted_rate = DataHelper.adapt_rate(clean_train[0], 
+																clean_train[1], 
 																best_rate)
-
 
 			ensemble = NoiseDetectionEnsemble.get_ensemble(base_clf, False, 
 													adapted_rate, max_nb_feats)
