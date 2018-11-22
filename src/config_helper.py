@@ -41,10 +41,8 @@ class ConfigHelper():
 	@staticmethod
 	def get_classifiers():
 		return 	[
-				("FL_RF", Tree(max_depth=None, min_samples_leaf=1, 
-								min_impurity_decrease=0.01), "fl"),
-				("CL_RF", Tree(max_depth=None, min_samples_leaf=1,
-								min_impurity_decrease=0.01), "cl"),
+				#("FL_RF", Tree(max_depth=None, min_samples_leaf=1), "fl"),
+				("CL_RF", Tree(max_depth=None, min_samples_leaf=1), "cl"),
 				("FL_MAJ_RF", MajorityFiltering.get_ensemble(), "maj"),
 				("RF", RF(n_estimators=501, max_depth=None, 
 						  max_features="sqrt", min_samples_leaf=1, 
