@@ -2,8 +2,10 @@
 
 from copy import deepcopy
 from numpy import sqrt
+from pandas import Series
 
 from sklearn.model_selection import StratifiedKFold
+from sklearn.preprocessing import LabelEncoder
 
 
 
@@ -16,13 +18,17 @@ class DataHelper():
 	def extract_feature_labels(frame, target, range_cols=True):
 
 		labels = frame[target] if target!=-1 else frame.iloc[:, target]
-		labels = labels.astype("category")
+
 		feats = frame.drop(columns=labels.name)
+
+		le = LabelEncoder()
+		encoded_labels = Series(le.fit_transform(labels), index=labels.index,
+								dtype="category")
 
 		if range_cols:
 			feats.columns=range(len(feats.columns))
 
-		return feats, labels
+		return feats, encoded_labels
 
 	@staticmethod
 	def split_in_sets(frame, labels):
