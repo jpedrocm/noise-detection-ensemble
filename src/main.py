@@ -5,9 +5,13 @@ from io_helper import IOHelper
 from data_helper import DataHelper
 from metrics_helper import MetricsHelper
 
+import time
+
 
 
 def main():
+
+	start = time.time()
 
 	for set_data in ConfigHelper.get_datasets():
 		set_name = set_data[0]
@@ -22,6 +26,8 @@ def main():
 		DataHelper.create_label_mapping(labels)
 		max_nb_feats = DataHelper.calculate_max_nb_features(feats)
 
+		MetricsHelper.reset_metrics()
+
 		for e in range(ConfigHelper.nb_executions):
 			print("Execution: " + str(e))
 
@@ -35,7 +41,8 @@ def main():
 			for noise_level in ConfigHelper.noise_levels:
 				print("Noise level: " + str(noise_level))
 
-				noisy_train_y = DataHelper.insert_noise(train_y, noise_level)
+				noisy_idxs, noisy_train_y = DataHelper.insert_noise(train_y, 
+																noise_level)
 
 				for name, clf, clean_type in ConfigHelper.get_classifiers():
 					print("Ensemble: " + name)
@@ -44,6 +51,7 @@ def main():
 																clean_type,
 																train_X,
 																noisy_train_y,
+																noisy_idxs,
 																max_nb_feats)
 
 					chosen_rate = algorithm_data[0]
@@ -51,6 +59,8 @@ def main():
 					chosen_X = algorithm_data[2]
 					chosen_y = algorithm_data[3]
 					chosen_clf = algorithm_data[4]
+					tot_filtered = algorithm_data[5]
+					true_filtered = algorithm_data[6]
 
 					chosen_clf.fit(chosen_X, chosen_y)
 					predictions = chosen_clf.predict(test_X)
@@ -59,11 +69,13 @@ def main():
 
 					MetricsHelper.metrics.append([set_name, e, noise_level, 
 												name, chosen_rate, 
-												chosen_threshold, error])
-
-			IOHelper.store_results(MetricsHelper.convert_metrics_to_frame(), 
-					set_name)
-			sys.exit()
+												chosen_threshold, error,
+												tot_filtered, true_filtered])
+				
+		IOHelper.store_results(MetricsHelper.convert_metrics_to_frame(), 
+				set_name)
+		
+		print(str(time.time()-start))
 
 
 if __name__ == "__main__":
