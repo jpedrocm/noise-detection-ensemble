@@ -33,9 +33,13 @@ The goal of this project is to implement the proposed method of the paper ["A tw
 ### Reproducing
 
 * Enter into the project main folder in your local repository
-* Run the experiment
+* Run this first command to generate all metrics
 ```
 python main.py
+```
+* Run this second command to generate the mean and deviation over metrics
+```
+python aggregate.py
 ```
 
 ## Project Structure
@@ -44,7 +48,10 @@ python main.py
     ├── data                                  # Datasets files
     ├── results                               # Results files
     ├── src                                   # Source code files
+    |   ├── aggregate.py
     |   ├── main.py
+    |   ├── majority_filtering.py
+    |   ├── noise_detection_ensemble.py
     |   ├── config_helper.py
     |   ├── data_helper.py
     |   ├── io_helper.py
