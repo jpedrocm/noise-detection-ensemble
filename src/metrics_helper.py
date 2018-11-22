@@ -19,7 +19,7 @@ class MetricsHelper():
 	def calculate_true_filter(y_idxs, noisy_idxs):
 		set_idxs = set(list(y_idxs))
 		true_filtered = [i for i in list(noisy_idxs) if i not in set_idxs]
-		return len(true_filtered)
+		return len(set(true_filtered))
 
 	@staticmethod
 	def reset_metrics():
