@@ -41,13 +41,13 @@ def main():
 			for noise_level in ConfigHelper.noise_levels:
 				print("Noise level: " + str(noise_level))
 
-				noisy_idxs, noisy_train_y = DataHelper.insert_noise(train_y, 
+				noisy_idxs, noisy_train_y = DataHelper.insert_noise(train_y,
 																noise_level)
 
 				for name, clf, clean_type in ConfigHelper.get_classifiers():
 					print("Ensemble: " + name)
 
-					algorithm_data = ConfigHelper.choose_algorithm(clf, 
+					algorithm_data = ConfigHelper.choose_algorithm(clf,
 																clean_type,
 																train_X,
 																noisy_train_y,
@@ -64,16 +64,16 @@ def main():
 
 					chosen_clf.fit(chosen_X, chosen_y)
 					predictions = chosen_clf.predict(test_X)
-					error = MetricsHelper.calculate_error_score(test_y, 
+					error = MetricsHelper.calculate_error_score(test_y,
 															predictions)
 
-					MetricsHelper.metrics.append([set_name, e, noise_level, 
-												name, chosen_rate, 
+					MetricsHelper.metrics.append([set_name, e, noise_level,
+												name, chosen_rate,
 												chosen_threshold, error,
 												tot_filtered, true_filtered])
 				
-		IOHelper.store_results(MetricsHelper.convert_metrics_to_frame(), 
-				set_name)
+		IOHelper.store_results(MetricsHelper.convert_metrics_to_frame(),
+				"all_"+set_name)
 		
 		print(str(time.time()-start))
 
