@@ -14,7 +14,8 @@ from majority_filtering import MajorityFiltering
 
 
 class ConfigHelper():
-	nb_executions = 2
+
+	nb_executions = 50
 	noise_levels = [0, 0.1, 0.2, 0.3, 0.4]
 
 	metrics_file = "metrics"
@@ -25,22 +26,25 @@ class ConfigHelper():
 		space = " "
 		comma = ","
 		
-		return	[("blood",		 None,		-1,  	0,	comma), 
-				 #("breast",		 	0,		-1,  None,	comma), #remover linhas com ?
-				 #("chess",  	 None,		-1,  None,	comma), # nao pega string to float
-				 #("german", 	 None, 		-1,	 None,	space), #nao pega string to float
-				 ("heart",  	 None, 		-1,	 None,	space), 
-				# ("ionosphere",  None, 		-1,	 None,	comma), # consertar samples lida
-				 #("parkinsons",  None, "status",	0,	comma), #remover "name"
-				 ("spambase", 	 None, 		-1,	 None,	comma), 
-				 #("tic-tac-toe", None, 		-1,	 None,	comma) # OHE
+		return	["blood", 
+				 "breast",
+				 "chess",
+				 "german",
+				 "heart",
+				 "ionosphere",
+				 "liver",
+				 "parkinsons",
+				 "sonar",
+				 "spambase", 
 				]
 
 	@staticmethod
 	def get_classifiers():
 		return 	[
-				("FL_RF", Tree(max_depth=None, min_samples_leaf=1), "fl"),
-				("CL_RF", Tree(max_depth=None, min_samples_leaf=1), "cl"),
+				("FL_RF", Tree(max_depth=None, min_samples_leaf=1, 
+								min_impurity_decrease=0.01), "fl"),
+				("CL_RF", Tree(max_depth=None, min_samples_leaf=1,
+								min_impurity_decrease=0.01), "cl"),
 				("FL_MAJ_RF", MajorityFiltering.get_ensemble(), "maj"),
 				("RF", RF(n_estimators=501, max_depth=None, 
 						  max_features="sqrt", min_samples_leaf=1, 
@@ -52,7 +56,6 @@ class ConfigHelper():
 									  n_estimators=501, algorithm="SAMME"),#defaukt 100
 									  None)
 				]
-
 
 	@staticmethod
 	def choose_algorithm(clf, clean_type, train_X, noisy_train_y,
