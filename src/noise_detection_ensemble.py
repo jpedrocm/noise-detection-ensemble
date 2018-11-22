@@ -51,7 +51,7 @@ class NoiseDetectionEnsemble():
 		return (best_ensemble, best_rate, min_error)
 
 	@staticmethod
-	def _mark_as_noisy(detector, threshold, X, y):
+	def _get_oob_prediction_matrix(detector, X):
 
 		estimators_samples_set = [set(samples) for samples in \
 							detector.estimators_samples_]
@@ -62,7 +62,7 @@ class NoiseDetectionEnsemble():
 		ausence_mask = [[iloc_idx not in estimators_samples_set[i] for i in \
 						range(nb_clfs)] for iloc_idx in range(nb_instances)]
 
-		instance_ausence = DataFrame(ausence_mask, index=y.index,
+		instance_ausence = DataFrame(ausence_mask, index=X.index,
 									 columns=range(nb_clfs), dtype=object)
 
 		for clf_index in instance_ausence.columns:
@@ -75,15 +75,21 @@ class NoiseDetectionEnsemble():
 			clf_instance_ausence.loc[oob_idxs.index] = oob_predictions
 
 		predictions = instance_ausence.values
-		filtered = [[val for val in row if not isinstance(val, bool)] \
+		oob_preds = [[val for val in row if not isinstance(val, bool)] \
 					for row in predictions]
 
-		errors = [MetricsHelper.calculate_error_score([y.iloc[i]]*len(filtered[i]), 
-						filtered[i]) for i in range(nb_instances)]
+		return oob_preds
+
+	@staticmethod
+	def _mark_as_noisy(oob_matrix, y, threshold):
+
+		nb_instances = len(y)
+
+		errors = [MetricsHelper.calculate_error_score([y.iloc[i]]*len(oob_matrix[i]), 
+						oob_matrix[i]) for i in range(nb_instances)]
 
 		is_noise_list = [abs(error - threshold) > 1e-10 for error in errors]
 		is_noise = Series(is_noise_list, index=y.index, dtype=bool, name="is_noise")
-
 		return is_noise
 
 	@staticmethod
@@ -156,9 +162,13 @@ class NoiseDetectionEnsemble():
 		best_threshold = None
 		best_is_y_noise = None
 
+		oob_pred_matrix = NoiseDetectionEnsemble._get_oob_prediction_matrix(
+														detector, X)
+
 		for threshold in NoiseDetectionEnsemble.clean_thresholds:
-			is_y_noise = NoiseDetectionEnsemble._mark_as_noisy(detector,
-															   threshold, X, y)
+			is_y_noise = NoiseDetectionEnsemble._mark_as_noisy(oob_pred_matrix,
+															   y, threshold)
+
 			cv_error = NoiseDetectionEnsemble._calculate_cv_error(base_clf,
 																  best_rate,
 																  X, y,
