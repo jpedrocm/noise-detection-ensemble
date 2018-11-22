@@ -13,20 +13,15 @@ def main():
 
 	start = time.time()
 
-	for set_data in ConfigHelper.get_datasets():
-		set_name = set_data[0]
-		set_index = set_data[1]
-		set_target = set_data[2]
-		set_header = set_data[3]
-		set_sep = set_data[4]
+	for set_name in ConfigHelper.get_datasets():
 
-		data = IOHelper.read_dataset(set_name, set_index, set_header, set_sep)
+		MetricsHelper.reset_metrics()
+
+		data, set_target = IOHelper.read_dataset(set_name)
 
 		feats, labels = DataHelper.extract_feature_labels(data, set_target)
 		DataHelper.create_label_mapping(labels)
 		max_nb_feats = DataHelper.calculate_max_nb_features(feats)
-
-		MetricsHelper.reset_metrics()
 
 		for e in range(ConfigHelper.nb_executions):
 			print("Execution: " + str(e))
