@@ -1,6 +1,7 @@
 ###############################################################################
 
 from math import inf as INF
+from copy import deepcopy
 
 from numpy import mean
 from sklearn.ensemble import BaggingClassifier
@@ -81,6 +82,12 @@ class NoiseDetectionEnsemble():
 		return oob_preds
 
 	@staticmethod
+	def _get_major_oob_label(oob_pred_matrix):
+
+		oob_preds = Series([val for row in oob_pred_matrix for val in row])
+		return oob_preds.mode()[0]
+
+	@staticmethod
 	def _mark_as_noisy(oob_matrix, y, threshold):
 
 		nb_instances = len(y)
@@ -88,12 +95,13 @@ class NoiseDetectionEnsemble():
 		errors = [MetricsHelper.calculate_error_score([y.iloc[i]]*len(oob_matrix[i]), 
 						oob_matrix[i]) for i in range(nb_instances)]
 
-		is_noise_list = [abs(error - threshold) > 1e-10 for error in errors]
+		is_noise_list = [error > threshold  for error in errors]
 		is_noise = Series(is_noise_list, index=y.index, dtype=bool, name="is_noise")
 		return is_noise
 
 	@staticmethod
-	def _clean_noisy_data(train_X, train_y, is_y_noise, clean_type):
+	def _clean_noisy_data(train_X, train_y, is_y_noise, clean_type, 
+						  maj_oob_label):
 
 		clean_X = None
 		clean_y = None
@@ -108,10 +116,8 @@ class NoiseDetectionEnsemble():
 								if is_y_noise.iloc[i]==True]
 
 			clean_X = train_X
-			noise_values = DataHelper.select_rows(train_y, noise_idxs, 
-												  copy=False)
-			clean_y = DataHelper.map_labels(train_y, noise_values.index, 
-											noise_values)
+			clean_y = deepcopy(train_y)
+			clean_y.loc[noise_idxs] = maj_oob_label
 		else:
 			raise ValueError("Clean type error: " + clean_type)
 
@@ -119,7 +125,7 @@ class NoiseDetectionEnsemble():
 
 	@staticmethod
 	def _calculate_cv_error(base_clf, best_rate, X, y, is_y_noise, clean_type, 
-							max_nb_feats):
+							max_nb_feats, major_oob_label):
 
 		errors = []
 
@@ -135,7 +141,7 @@ class NoiseDetectionEnsemble():
 	
 			clean_train = NoiseDetectionEnsemble._clean_noisy_data(train_X,
 													train_y, train_is_y_noise,
-													clean_type)
+													clean_type, major_oob_label)
 
 			train_X, train_y, adapted_rate = DataHelper.adapt_rate(clean_train[0], 
 																clean_train[1], 
@@ -163,7 +169,10 @@ class NoiseDetectionEnsemble():
 		best_is_y_noise = None
 
 		oob_pred_matrix = NoiseDetectionEnsemble._get_oob_prediction_matrix(
-														detector, X)
+																detector, X)
+
+		maj_oob_label = NoiseDetectionEnsemble._get_major_oob_label(
+															oob_pred_matrix)
 
 		for threshold in NoiseDetectionEnsemble.clean_thresholds:
 			is_y_noise = NoiseDetectionEnsemble._mark_as_noisy(oob_pred_matrix,
@@ -174,7 +183,8 @@ class NoiseDetectionEnsemble():
 																  X, y,
 																  is_y_noise,
 																  clean_type,
-																  max_nb_feats)
+																  max_nb_feats,
+																  maj_oob_label)
 			
 			if cv_error < min_error:
 				min_error = cv_error
@@ -183,7 +193,8 @@ class NoiseDetectionEnsemble():
 		
 		cleansed_tuple = NoiseDetectionEnsemble._clean_noisy_data(X, y,
 														best_is_y_noise,
-														clean_type)
+														clean_type, 
+														maj_oob_label)
 
 		return (best_threshold, cleansed_tuple[0], cleansed_tuple[1])
 			
