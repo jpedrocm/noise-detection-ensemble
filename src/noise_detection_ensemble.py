@@ -106,14 +106,13 @@ class NoiseDetectionEnsemble():
 		clean_X = None
 		clean_y = None
 
+		noise_idxs = is_y_noise[is_y_noise==True].index
+
 		if clean_type=="fl":
-			noise_idxs = is_y_noise[is_y_noise==True].index
 			clean_X = train_X.drop(index=noise_idxs)
 			clean_y = train_y.drop(index=noise_idxs)
 
 		elif clean_type=="cl":
-			noise_idxs = [i for i in range(len(is_y_noise)) \
-								if is_y_noise.iloc[i]==True]
 
 			clean_X = train_X
 			clean_y = deepcopy(train_y)
