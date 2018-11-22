@@ -13,12 +13,14 @@ class DataHelper():
 
 
 	@staticmethod
-	def extract_feature_labels(frame, target):
+	def extract_feature_labels(frame, target, range_cols=True):
 
 		labels = frame[target] if target!=-1 else frame.iloc[:, target]
 		labels = labels.astype("category")
 		feats = frame.drop(columns=labels.name)
-		feats.columns=range(len(feats.columns))
+
+		if range_cols:
+			feats.columns=range(len(feats.columns))
 
 		return feats, labels
 
@@ -57,10 +59,30 @@ class DataHelper():
 		sample = labels.sample(frac=level)
 		sample_idxs = sample.index
 		sample_values = sample.values
-		return DataHelper.map_labels(labels, sample_idxs, sample_values)
+		return sample_idxs, DataHelper.map_labels(labels,
+								sample_idxs, sample_values)
 
 	@staticmethod
 	def calculate_max_nb_features(features):
 
 		nb_features = len(features.columns)
 		return max(1, int(sqrt(nb_features)))
+
+	@staticmethod
+	def adapt_rate(X, y, rate):
+
+		adapted = None
+
+		if rate > 1:
+			new_X = deepcopy(X)
+			new_y = deepcopy(y)
+			new_X = new_X.append(new_X, sort=False)
+			new_y = new_y.append(new_y)
+
+			adapted_rate = rate/2.0
+
+			adapted = (new_X, new_y, adapted_rate)
+		else:
+			adapted = (X, y, rate)
+
+		return adapted
