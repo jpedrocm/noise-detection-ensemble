@@ -15,10 +15,8 @@ from majority_filtering import MajorityFiltering
 
 class ConfigHelper():
 
-	nb_executions = 50
-	noise_levels = [0, 0.1, 0.2, 0.3, 0.4]
-
-	metrics_file = "metrics"
+	nb_executions = 30
+	noise_levels = [0.0, 0.1, 0.2, 0.3, 0.4]
 
 
 	@staticmethod
@@ -26,23 +24,24 @@ class ConfigHelper():
 		space = " "
 		comma = ","
 		
-		return	["blood", 
-				 "breast",
-				 "chess",
-				 "german",
+		return	[#"blood", 
+				 #"breast",
+				 #"chess",
+				 #"german",
 				 "heart",
-				 "ionosphere",
+				 #"ionosphere",
 				 "liver",
 				 "parkinsons",
-				 "sonar",
-				 "spambase", 
+				 #"sonar",
+				 #"spambase", 
 				]
 
 	@staticmethod
 	def get_classifiers():
 		return 	[
-				("FL_RF", Tree(max_depth=None, min_samples_leaf=1), "fl"),
-				("CL_RF", Tree(max_depth=None, min_samples_leaf=1), "cl"),
+				("FL_RF", Tree(max_depth=None, min_samples_leaf=1,
+								 splitter="random"), "fl"),
+				("CL_RF", Tree(max_depth=None, min_samples_leaf=1, splitter="random"), "cl"),
 				("FL_MAJ_RF", MajorityFiltering.get_ensemble(), "maj"),
 				("RF", RF(n_estimators=501, max_depth=None, 
 						  max_features="sqrt", min_samples_leaf=1, 
@@ -90,14 +89,13 @@ class ConfigHelper():
 			chosen_X, chosen_y, adapted_rate = DataHelper.adapt_rate(chosen_X,
 														chosen_y, chosen_rate)
 
-			chosen_clf = NoiseDetectionEnsemble.get_ensemble(clf, False,
-															adapted_rate,
-															max_nb_feats)
+			chosen_clf = RF(n_estimators=501, max_features="sqrt",n_jobs=-1)
 
 			true_filtered = MetricsHelper.calculate_true_filter(chosen_y.index,
 															noisy_idxs)
 
 		tot_filtered = len(train_X)-len(chosen_X.index.unique())
+		false_filtered = tot_filtered-true_filtered
 
 		return [chosen_rate, chosen_threshold, chosen_X, chosen_y, chosen_clf,
-				tot_filtered, true_filtered]
+				true_filtered/len(train_X), false_filtered/len(train_X)]
