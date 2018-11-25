@@ -81,14 +81,14 @@ class DataHelper():
 
 		if rate > 1:
 			new_X = deepcopy(X)
-			new_y = deepcopy(y)
-			new_X = new_X.append(new_X, sort=False)
-			new_y = new_y.append(new_y)
+			new_X["label"] = deepcopy(y)
+			samp = new_X.sample(frac=rate-1)
+			new_X = new_X.append(samp)
+			new_y = new_X["label"]
+			new_X = new_X.drop(columns="label")
 
-			adapted_rate = rate/2.0
-
-			adapted = (new_X, new_y, adapted_rate)
+			adapted = [new_X, new_y, rate]
 		else:
-			adapted = (X, y, rate)
+			adapted = [deepcopy(X), deepcopy(y), rate]
 
 		return adapted
