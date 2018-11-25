@@ -1,6 +1,6 @@
 ###############################################################################
 
-from pandas import read_csv, get_dummies
+from pandas import read_csv, get_dummies, DataFrame, set_option
 
 from config_helper import ConfigHelper
 
@@ -19,7 +19,7 @@ class IOHelper():
 						 float_format=precision)
 
 	@staticmethod
-	def _read_csv(filename, header, index_col, sep, na):
+	def _read_csv(filename,header, index_col, sep, na):
 
 		file = IOHelper.data_path+filename+".csv"
 		frame = read_csv(filepath_or_buffer=file, encoding="ascii", 
@@ -34,6 +34,12 @@ class IOHelper():
 
 		return frame
 
+	@staticmethod
+	def _read_result(filename):
+		file = IOHelper.results_path+filename+".csv"
+
+		return read_csv(filepath_or_buffer=file, encoding="ascii", 
+						index_col=0, header=0, sep=",", na_values=None)
 
 	@staticmethod
 	def read_dataset(filename):
@@ -84,3 +90,21 @@ class IOHelper():
 
 		IOHelper._write_to_csv(frame, filename, IOHelper.results_path,
 							   precision=None)
+
+	@staticmethod
+	def read_multiple_results(prefix, filenames):
+
+		frame = DataFrame()
+
+		for filename in filenames:
+			read_frame = IOHelper._read_result(prefix+filename)
+			frame = frame.append(read_frame, sort=False, ignore_index=True)
+
+		return frame
+
+	@staticmethod
+	def store_error_table(dataframe, filename):
+		set_option("display.max_columns", 6)
+		file = IOHelper.results_path+filename+".txt"
+		with open(file, "w") as f:
+			f.write(str(dataframe))
