@@ -1,55 +1,58 @@
 ###############################################################################
 
-from math import inf as INF
 from copy import deepcopy
 
-from numpy import mean
+from numpy import inf as INF
+from numpy import mean, float64
+
 from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble import RandomForestClassifier as RF
 from sklearn.model_selection import StratifiedKFold
 from pandas import DataFrame, Series
 
 from data_helper import DataHelper
 from metrics_helper import MetricsHelper
 
+EPS=10**-4
 
 
 class NoiseDetectionEnsemble():
 
 	k_folds = 3
-	sampling_rates = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0,1.2]
+	sampling_rates = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0]
 	clean_thresholds = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
 
 	@staticmethod
 	def get_ensemble(base_clf, use_oob, sample_rate, max_nb_feats):
 		return BaggingClassifier(base_clf, n_estimators=501,
-								oob_score=use_oob, n_jobs=-1,
-								max_samples=min(sample_rate, 1.0),
-								max_features=max_nb_feats)
+					oob_score=use_oob, n_jobs=-1,
+					max_samples=min(sample_rate, 1.0),
+					max_features=max_nb_feats)
 
 	@staticmethod
 	def _first_stage(base_clf, X, y, max_nb_feats):
-		min_error = INF
+		min_error = float64(INF)
 		ideal_rate = None
 		best_ensemble = None
 
 		for rate in NoiseDetectionEnsemble.sampling_rates:
-			
-			X, y, adapted_rate = DataHelper.adapt_rate(X, y, rate)
+
+			X_adapted, y_adapted, adapted_rate = DataHelper.adapt_rate(X, y, rate)
 
 			ensemble = NoiseDetectionEnsemble.get_ensemble(base_clf, True,
 												adapted_rate, max_nb_feats)
 
-			ensemble.fit(X, y)
+			ensemble.fit(X_adapted, y_adapted)
 
-			error = ensemble.oob_score_
+			error = (1-ensemble.oob_score_)*100
 
-			if error < min_error:
+			if error < min_error - EPS:
 				min_error = error
-				best_rate = rate
+				ideal_rate = rate
 				best_ensemble = ensemble
 
-		return (best_ensemble, best_rate, min_error)
+		return (best_ensemble, ideal_rate, min_error)
 
 	@staticmethod
 	def _get_oob_prediction_matrix(detector, X):
@@ -146,8 +149,7 @@ class NoiseDetectionEnsemble():
 																clean_train[1], 
 																best_rate)
 
-			ensemble = NoiseDetectionEnsemble.get_ensemble(base_clf, False, 
-													adapted_rate, max_nb_feats)
+			ensemble = RF(501, n_jobs=-1, max_features="sqrt")
 			ensemble.fit(train_X, train_y)
 
 			val_X = DataHelper.select_rows(X, val_idxs, copy=False)
