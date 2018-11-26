@@ -15,7 +15,7 @@ from majority_filtering import MajorityFiltering
 
 class ConfigHelper():
 
-	nb_executions = 30
+	nb_executions = 50
 	noise_levels = [0.0, 0.1, 0.2, 0.3, 0.4]
 
 
@@ -24,16 +24,15 @@ class ConfigHelper():
 		space = " "
 		comma = ","
 		
-		return	[#"blood", 
-				 #"breast",
-				 #"chess",
-				 #"german",
+		return	["blood", 
+				 "breast",
+				 "chess",
 				 "heart",
-				 #"ionosphere",
+				 "ionosphere",
 				 "liver",
 				 "parkinsons",
-				 #"sonar",
-				 #"spambase", 
+				 "sonar",
+				 "spambase", 
 				]
 
 	@staticmethod
@@ -46,11 +45,11 @@ class ConfigHelper():
 				("RF", RF(n_estimators=501, max_depth=None, 
 						  max_features="sqrt", min_samples_leaf=1, 
 						  n_jobs=-1), None),
-				("Boosting", Adaboost(base_estimator=Tree(max_depth=None, #default 30
-									  min_samples_leaf=1, #default 7
-									  min_samples_split=2, #default 20
+				("Boosting", Adaboost(base_estimator=Tree(max_depth=None,
+									  min_samples_leaf=1,
+									  min_samples_split=2,
 									  min_impurity_decrease=0.01), 
-									  n_estimators=501, algorithm="SAMME"),#defaukt 100
+									  n_estimators=501, algorithm="SAMME"),
 									  None)
 				]
 
