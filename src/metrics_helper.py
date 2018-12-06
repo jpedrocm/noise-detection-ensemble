@@ -33,6 +33,7 @@ class MetricsHelper():
 				   "threshold", "test_error", "true_filtered", "false_filtered"]
 		return DataFrame(MetricsHelper.metrics, columns=columns)
 
+	@staticmethod
 	def adapt_results(results):
 
 		results.drop(columns="execution", inplace=True)
@@ -40,40 +41,38 @@ class MetricsHelper():
 		results[["noise"]] = results[["noise"]].astype(int)
 
 	@staticmethod
-	def aggregate_rate(results):
-
-		frame = results.drop(columns=["false_filtered", "true_filtered", 
-									"threshold", "test_error"])
+	def _finish_param_plot(frame, y_name, ylim, x_label, y_label):
 		frame = frame[frame["clf"]=="FL_RF"]
 		frame = frame.groupby(by=["dataset", "noise"]).mean().unstack()
 
-		p=frame.plot(kind="bar", y="sampling_rate", ylim=(0.0, 1.2))
-		p.set_xlabel("Fig. 1 - Best Sampling Rates")
-		p.set_ylabel("sampling rate")
+		p=frame.plot(kind="bar", y=y_name, ylim=ylim)
+		p.set_xlabel(x_label)
+		p.set_ylabel(y_label)
 		p.xaxis.set_label_coords(0.5, -0.1)
 		p.yaxis.set_label_coords(-0.05, 0.5)
 		p.legend(loc="center", ncol=5, title="noise", fontsize="medium", 
 				labels=["0%", "10%", "20%", "30%", "40%"],
-				frameon=False, bbox_to_anchor=(0.5,1.05))
+				frameon=False, bbox_to_anchor=(0.5, 1.05))
 		plt.show()
+
+	@staticmethod
+	def aggregate_rate(results):
+
+		frame = results.drop(columns=["false_filtered", "true_filtered", 
+									"threshold", "test_error"])
+		MetricsHelper._finish_param_plot(frame, "sampling_rate", (0.0, 1.2), 
+								   "Fig. 1 - Best Sampling Rates",
+								   "sampling rate")
 
 	@staticmethod
 	def aggregate_threshold(results):
 
 		frame = results.drop(columns=["false_filtered", "true_filtered", 
 									"sampling_rate", "test_error"])
-		frame = frame[frame["clf"]=="FL_RF"]
-		frame = frame.groupby(by=["dataset", "noise"]).mean().unstack()
-
-		p=frame.plot(kind="bar", y="threshold", ylim=(0.5,1.0))
-		p.set_xlabel("Fig. 2 - Best Thresholds")
-		p.set_ylabel("threshold")
-		p.xaxis.set_label_coords(0.5, -0.1)
-		p.yaxis.set_label_coords(-0.05, 0.5)
-		p.legend(loc="center", ncol=5, title="noise", fontsize="medium", 
-			labels=["0%", "10%", "20%", "30%", "40%"],
-			frameon=False, bbox_to_anchor=(0.5,1.05))
-		plt.show()
+		MetricsHelper._finish_param_plot(frame, "threshold", 
+								   (0.5, 1.0),
+								   "Fig. 2 - Best Thresholds",
+								   "threshold")
 
 	@staticmethod
 	def aggregate_error(results):
@@ -91,11 +90,16 @@ class MetricsHelper():
 
 	@staticmethod
 	def aggregate_filter(results):
+
 		frame = results.drop(columns=["test_error", "sampling_rate", "threshold"])
+
 		for noise in [0, 10, 30]:
+
 			noise_frame= frame[frame["noise"]==noise]
 			noise_frame = noise_frame.drop(columns="noise")
+
 			for clf in ["FL_RF", "FL_MAJ_RF"]:
+
 				clf_frame= noise_frame[noise_frame["clf"]==clf]
 				clf_frame = clf_frame.drop(columns="clf")
 				clf_frame = clf_frame.groupby(by=["dataset"]).mean()
