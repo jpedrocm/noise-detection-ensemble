@@ -8,17 +8,17 @@ This is the final project for the Multiple Classifiers System's class.
 
 ## Description
 
-The goal of this project is to implement the proposed method of the paper ["A two-stage ensemble method for the detection of class-label noise"](https://www.sciencedirect.com/science/article/pii/S0925231217317265) and reproduce the experiments in some of the paper datasets, which can be found in the [UCI Machine Learning repository](http://archive.ics.uci.edu/ml/datasets.html). The experimented datasets were: [Blood](http://archive.ics.uci.edu/ml/datasets/Blood+Transfusion+Service+Center), [Breast](http://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29), [Chess](http://archive.ics.uci.edu/ml/datasets/Chess+%28King-Rook+vs.+King-Pawn%29), [Heart](http://archive.ics.uci.edu/ml/datasets/Statlog+%28Heart%29), [Ionosfere](http://archive.ics.uci.edu/ml/datasets/Ionosphere), [Parkinsons](http://archive.ics.uci.edu/ml/datasets/Parkinsons), [Liver](http://archive.ics.uci.edu/ml/datasets/Liver+Disorders), [Sonar](https://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+%28Sonar,+Mines+vs.+Rocks%29) and [Spambase](http://archive.ics.uci.edu/ml/datasets/Spambase).
+The goal of this project is to implement the proposed method of the paper ["A two-stage ensemble method for the detection of class-label noise"](https://www.sciencedirect.com/science/article/pii/S0925231217317265) and reproduce the experiments in some of the paper datasets, which can be found in the [UCI Machine Learning repository](http://archive.ics.uci.edu/ml/datasets.html). The experimented datasets were: [Blood](http://archive.ics.uci.edu/ml/datasets/Blood+Transfusion+Service+Center), [Breast](http://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29), [Chess](http://archive.ics.uci.edu/ml/datasets/Chess+%28King-Rook+vs.+King-Pawn%29), [Heart](http://archive.ics.uci.edu/ml/datasets/Statlog+%28Heart%29), [Ionosfere](http://archive.ics.uci.edu/ml/datasets/Ionosphere), [Liver](http://archive.ics.uci.edu/ml/datasets/Liver+Disorders), [Parkinsons](http://archive.ics.uci.edu/ml/datasets/Parkinsons), [Sonar](https://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+%28Sonar,+Mines+vs.+Rocks%29) and [Spambase](http://archive.ics.uci.edu/ml/datasets/Spambase).
 
 ## Getting Started
 
 ### Requirements
 
-* [Python](https://www.python.org/) >= 3.7.0
+* [Python](https://www.python.org/) >= 3.7.1
 * [NumPy](http://www.numpy.org/) >= 1.15.4
 * [SciPy](https://www.scipy.org/) >= 1.1.0
 * [pandas](https://pandas.pydata.org/) >= 0.23.4
-* [scikit-learn](http://scikit-learn.org/stable/) >= 0.20.0
+* [scikit-learn](http://scikit-learn.org/stable/) >= 0.20.1
 * [matplotlib](https://matplotlib.org/) >= 3.0.1
 
 
