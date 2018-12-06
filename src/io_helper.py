@@ -58,11 +58,6 @@ class IOHelper():
 			frame = IOHelper._read_csv(filename, None, None, comma, None)
 			frame.drop(columns=14, inplace=True)
 			frame = get_dummies(frame, drop_first=True)
-		elif filename=="german":
-			frame = IOHelper._read_csv(filename, None, None, space, None)
-			frame.drop(columns=[0,2,3,5,6,8,9,11,13,14,16], inplace=True)
-			frame = get_dummies(frame, drop_first=True)
-			target = 20
 		elif filename=="heart":
 			frame = IOHelper._read_csv(filename, None, None, space, None)
 		elif filename=="ionosphere":
@@ -103,8 +98,8 @@ class IOHelper():
 		return frame
 
 	@staticmethod
-	def store_error_table(dataframe, filename):
+	def store_error_table(frame, filename):
 		set_option("display.max_columns", 6)
 		file = IOHelper.results_path+filename+".txt"
 		with open(file, "w") as f:
-			f.write(str(dataframe))
+			f.write(str(frame))
