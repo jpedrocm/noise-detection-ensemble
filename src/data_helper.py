@@ -80,14 +80,7 @@ class DataHelper():
 		adapted = None
 
 		if rate > 1:
-			new_X = deepcopy(X)
-			new_X["label"] = deepcopy(y)
-			samp = new_X.sample(frac=rate-1)
-			new_X = new_X.append(samp)
-			new_y = new_X["label"]
-			new_X = new_X.drop(columns="label")
-
-			adapted = [new_X, new_y, rate]
+			raise ValueError("Rate can't be bigger than 1.0")
 		else:
 			adapted = [deepcopy(X), deepcopy(y), rate]
 
