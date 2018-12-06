@@ -88,7 +88,7 @@ class ConfigHelper():
 			chosen_X, chosen_y, adapted_rate = DataHelper.adapt_rate(chosen_X,
 														chosen_y, chosen_rate)
 
-			chosen_clf = RF(n_estimators=501, max_features="sqrt",n_jobs=-1)
+			chosen_clf = RF(n_estimators=501, max_features="sqrt", n_jobs=-1)
 
 			true_filtered = MetricsHelper.calculate_true_filter(chosen_y.index,
 															noisy_idxs)

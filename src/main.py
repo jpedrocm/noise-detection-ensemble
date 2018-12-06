@@ -44,7 +44,7 @@ def main():
 																noise_level)
 
 				for name, clf, clean_type in ConfigHelper.get_classifiers():
-#
+
 					algorithm_data = ConfigHelper.choose_algorithm(clf,
 																clean_type,
 																train_X,
