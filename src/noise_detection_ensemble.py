@@ -13,12 +13,12 @@ from pandas import DataFrame, Series
 from data_helper import DataHelper
 from metrics_helper import MetricsHelper
 
-EPS=10**-4
 
 
 class NoiseDetectionEnsemble():
 
 	k_folds = 3
+	EPS=10**-4
 	sampling_rates = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0]
 	clean_thresholds = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
@@ -47,7 +47,7 @@ class NoiseDetectionEnsemble():
 
 			error = (1-ensemble.oob_score_)*100
 
-			if error < min_error - EPS:
+			if error < min_error - NoiseDetectionEnsemble.EPS:
 				min_error = error
 				ideal_rate = rate
 				best_ensemble = ensemble
