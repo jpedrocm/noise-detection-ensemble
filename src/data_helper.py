@@ -22,8 +22,7 @@ class DataHelper():
 		feats = frame.drop(columns=labels.name)
 
 		le = LabelEncoder()
-		encoded_labels = Series(le.fit_transform(labels), index=labels.index,
-								dtype="category")
+		encoded_labels = Series(le.fit_transform(labels), index=labels.index)
 
 		if range_cols:
 			feats.columns=range(len(feats.columns))
